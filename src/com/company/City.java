@@ -3,6 +3,7 @@ package com.company;
 public class City {
     private int x;
     private int y;
+    private int demand;
 
     public int getX() {
         return x;
@@ -10,6 +11,14 @@ public class City {
 
     public int getY() {
         return y;
+    }
+
+    public int getDemand() {
+        return demand;
+    }
+
+    public void setDemand(int demand) {
+        this.demand = demand;
     }
 
     public City(int x, int y) {

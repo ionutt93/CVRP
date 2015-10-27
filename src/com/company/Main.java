@@ -1,8 +1,9 @@
 package com.company;
 
-public class Main {
+import java.io.IOException;
 
-    public static void main(String[] args) {
-	// write your code here
+public class Main {
+    public static void main(String[] args) throws IOException, Exception {
+        Population p = new Population("fruitybun250.vrp.txt");
     }
 }
