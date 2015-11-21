@@ -81,9 +81,15 @@ public class Population {
             si = new Random().nextInt(population.size());
             selectThis = new Random().nextInt(4)<3;
 
-            if (population.get(fi).getFitness() >= population.get(si).getFitness()) {
+            if (population.get(fi).getFitness() < population.get(si).getFitness()) {
                 if (selectThis) parentIDs.add(fi);
                 else parentIDs.add(si);
+            } else if (population.get(fi).getFitness() > population.get(si).getFitness()) {
+                if (selectThis) parentIDs.add(si);
+                else parentIDs.add(fi);
+            } else {
+                if(new Random().nextBoolean() == true) parentIDs.add(si);
+                else parentIDs.add(fi);
             }
         }
 //        System.out.println(parentIDs.size() + "parents vs " + population.size() + " chromosones");
