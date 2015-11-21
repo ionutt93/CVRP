@@ -3,6 +3,7 @@ package com.company;
 import java.io.IOException;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import com.sun.glass.ui.SystemClipboard;
 import com.sun.tools.internal.jxc.ap.Const;
 
 import java.io.File;
@@ -70,13 +71,13 @@ public class Main {
         return result;
     }
 
-    public static void main(String[] args) throws IOException, Exception {
+    public static void main(String[] args) throws Exception {
         // reading in the data
         Consts.cities = Main.getCityData("fruitybun250.vrp.txt");
         Consts.depot  = new City(Consts.cities.get(0));
         Consts.cities.remove(0);
 
         GeneticAlgorithm algorithm = new GeneticAlgorithm();
-        algorithm.start();
+        algorithm.run(1000);
     }
 }

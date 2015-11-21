@@ -7,8 +7,9 @@ import java.util.ArrayList;
  */
 public class Consts {
     public static int capacity;
-    public static double mutationRate = 0.000001;
-    public static double crossoverRate = 0.75;
+    public final static int populationSize = 500;
+    public final static double mutationRate = 0.0001;
+    public final static double crossoverRate = 0.75;
     public static City depot;
     public static ArrayList<City> cities;
 }

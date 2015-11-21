@@ -1,36 +1,40 @@
 package com.company;
 
-/**
- * Created by ioan on 02/11/2015.
- */
 public class GeneticAlgorithm {
-    private float mutationRate = 0.00001f;
-    Population p;
-
-    public float getMutationRate() {
-        return mutationRate;
-    }
-
-    public void setMutationRate(float mutationRate) {
-        if (mutationRate <= 1.0f)
-            this.mutationRate = mutationRate;
-        else
-            System.out.println("Not a valid mutation rate");
-    }
+    private Population p;
+    private Chromosone bestSolution;
+    private final int duplicateCheckRate = 50;
 
     public GeneticAlgorithm() throws Exception {
-        p = new Population("fruitybun250.vrp.txt");
-    };
-
-    public void crossOver() {
-
-    };
-
-    public void start() {
-
+        p = new Population(Consts.populationSize);
+        bestSolution = new Chromosone();
     }
 
-    public void stop() {
 
+    public void run(int iterations) {
+        for (int i = 0; i < 1000; i++) {
+
+            p.evaluatePopulation();
+//            System.out.println("p.evaluatePopulation();");
+            p.trimPopulation();
+//            System.out.println("p.trimPopulation();");
+
+            final Chromosone bestSolutionInPopulation = p.getPopulation().get(0);
+            if (bestSolutionInPopulation.getFitness() < bestSolution.getFitness()) {
+                bestSolution = new Chromosone(bestSolutionInPopulation);
+            }
+
+            p.selectParents();
+//            System.out.println("p.selectParents();");
+            p.crossover();
+//            System.out.println("p.crossover();");
+            p.mutation();
+//            System.out.println("p.mutation();");
+
+            if (i % 50 == 0)
+                System.out.println(bestSolution.getFitness());
+        }
+
+        System.out.println("best solution: " + bestSolution.getFitness());
     }
 }
