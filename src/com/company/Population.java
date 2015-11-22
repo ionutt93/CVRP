@@ -70,10 +70,6 @@ public class Population {
 
     public void selectParents() {
         boolean selectThis;
-//        for (int i = 0; i < population.size(); i++) {
-//            selectThis = new Random().nextInt(4)<3;
-//            if (selectThis) parentIDs.add(i);
-//        }
 
         int fi,si;
         while(parentIDs.size() < population.size()) {
@@ -100,8 +96,8 @@ public class Population {
         for (int i = 0; i+1 < parentIDs.size(); i+=2) {
             final Chromosone firstParent = population.get(parentIDs.get(i));
             final Chromosone secondParent = population.get(parentIDs.get(i + 1));
-
             final ArrayList<Chromosone> result = firstParent.crossover(secondParent);
+
             population.addAll(result);
         }
         parentIDs.clear();

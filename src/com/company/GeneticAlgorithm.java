@@ -12,7 +12,7 @@ public class GeneticAlgorithm {
 
 
     public void run(int iterations) {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 500; i++) {
 
             p.evaluatePopulation();
 //            System.out.println("p.evaluatePopulation();");
@@ -36,5 +36,8 @@ public class GeneticAlgorithm {
         }
 
         System.out.println("best solution: " + bestSolution.getFitness());
+        System.out.println();
+        bestSolution.getAlleles().forEach(city -> System.out.print(city.getIndex() + "->"));
+        System.out.print(bestSolution.getPath());
     }
 }

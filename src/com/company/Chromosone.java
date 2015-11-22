@@ -36,6 +36,25 @@ public class Chromosone {
         this.alleles = new ArrayList<City>(other.alleles);
     }
 
+    public String getPath() {
+        String path = "";
+        String connector = "->";
+        double remainingCapacity = Consts.capacity;
+
+        path += "1" + connector;
+        for (City value : this.alleles) {
+            if (remainingCapacity >= value.getDemand()) {
+                remainingCapacity -= value.getDemand();
+                path += value.getIndex() + connector;
+            } else {
+                remainingCapacity = Consts.capacity;
+                path += "1\n1" + connector;
+            }
+        }
+        path += "1";
+        return path;
+    }
+
     // TODO: 09/11/2015 Test if the compute fitness method works correctly 
     public void computeFitness() {
         double            distanceSum       = 0;
