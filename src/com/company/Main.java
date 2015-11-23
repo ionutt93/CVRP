@@ -78,6 +78,6 @@ public class Main {
         Consts.cities.remove(0);
 
         GeneticAlgorithm algorithm = new GeneticAlgorithm();
-        algorithm.run(1000);
+        algorithm.run(500);
     }
 }

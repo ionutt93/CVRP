@@ -8,6 +8,7 @@ import com.sun.tools.javac.comp.Check;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Population {
     private ArrayList<Chromosone> population;
@@ -45,15 +46,23 @@ public class Population {
         boolean checkForDuplicates = new Random().nextInt(100)==0;
 
         if (checkForDuplicates) {
-            Set<Chromosone> distinctChromosones = new HashSet<Chromosone>();
-            distinctChromosones.addAll(population);
-            population.clear();
-            population.addAll(distinctChromosones);
+            for (int i = 0; i < population.size() - 1; i++) {
+                final ArrayList<Integer> c1 = new ArrayList<Integer>(population.get(i).getAlleles().stream().map(a -> a.getIndex()).collect(Collectors.toList()));
+                for (int j = i + 1; j < population.size(); j++) {
+                    final ArrayList<Integer> c2 = new ArrayList<Integer>(population.get(j).getAlleles().stream().map(a -> a.getIndex()).collect(Collectors.toList()));
+                    boolean duplicate = true;
+                    for (int k = 0; k < c1.size(); k++) {
+                        if (c1.get(k) != c2.get(k)) {
+                            duplicate = false;
+                            break;
+                        }
+                    }
 
-            if (population.size() < Consts.populationSize) {
-                final int diff = Consts.populationSize - population.size();
-                for (int i = 0; i < diff; i++) {
-                    population.add(new Chromosone());
+                    if (duplicate) {
+                        System.out.println("Duplicate found");
+                        population.remove(j);
+                        population.add(new Chromosone());
+                    }
                 }
             }
         }

@@ -12,7 +12,8 @@ public class GeneticAlgorithm {
 
 
     public void run(int iterations) {
-        for (int i = 0; i < 500; i++) {
+        System.out.println(Consts.cities.get(0).getIndex());
+        for (int i = 0; i < iterations; i++) {
 
             p.evaluatePopulation();
 //            System.out.println("p.evaluatePopulation();");

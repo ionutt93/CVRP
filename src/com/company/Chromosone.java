@@ -3,6 +3,8 @@ package com.company;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Chromosone {
     private Double          fitness;
@@ -83,14 +85,45 @@ public class Chromosone {
         fitness = distanceSum;
     }
 
-    private Chromosone getOChild(ArrayList<City> others) {
-        ArrayList<City> copy = new ArrayList<City>(this.getAlleles());
-        for (int i = 0; i < copy.size(); i++) {
-            if (new Random().nextBoolean() == true) {
-                copy.set(i, others.get(i));
-            }
+    private Integer[] getIndexArray(ArrayList<City> a) {
+        Integer[] r = new Integer[a.size()];
+        for (int i = 0; i < r.length; i++) {
+            r[i] = a.get(i).getIndex();
         }
-        return new Chromosone(copy);
+        return r;
+    }
+
+    private ArrayList<City> createCityArray(ArrayList<Integer> indexes) {
+        ArrayList<City> result = new ArrayList<City>(indexes.size());
+        for (Integer i: indexes) {
+            result.add(Consts.cities.get(i - 2));
+        }
+        return result;
+    }
+
+    private Chromosone getOChild(ArrayList<City> others) {
+        ArrayList<Integer> matching = new ArrayList<Integer>();
+        int max = 0;
+        while(matching.size() != others.size()) {
+            BiGraph g = new BiGraph(getIndexArray(this.alleles), getIndexArray(others));
+            matching = g.getPerfectMatching();
+
+//            System.out.println();
+//            for (Integer m:
+//                 matching) {
+//                System.out.print(m + "|");
+//            }
+
+//            for (int i = 0; i < matching.size() - 1; i++) {
+//                for (int j = i + 1; j < matching.size(); j++) {
+//                    if (matching.get(i) == matching.get(j)) {
+//                        System.out.println("Duplicate");
+//                        System.out.println(matching.get(i) + " " + matching.get(j));
+//                    }
+//                }
+//            }
+        }
+        return new Chromosone(createCityArray(matching));
     }
 
     private Chromosone getEChild(ArrayList<City> oChild, ArrayList<City> others) {
@@ -109,7 +142,7 @@ public class Chromosone {
     public ArrayList<Chromosone> crossover(Chromosone other) {
         ArrayList<Chromosone> result = new ArrayList<Chromosone>(2);
         Chromosone best = null;
-        int i = 16;
+        int i = 5;
 
         while(i != 0) {
             Chromosone child = getOChild(other.getAlleles());
@@ -168,22 +201,26 @@ public class Chromosone {
                 array.set(i, new City(val1));
             }
         }
-
-//        for (int i = 0; i < array.size(); i++) {
-//            if (array.get(i).getIndex() == i1) {
-//                array.set(i, val2);
-//            } else if(array.get(i).getIndex() == i2) {
-//                array.set(i, val1);
-//            }
-//        }
     }
 
     public void mutation() {
-        final int i1 = new Random().nextInt(alleles.size());
-        final int i2 = new Random().nextInt(alleles.size());
+        final boolean swapChromosone = new Random().nextInt(1000)==0;
+        if (swapChromosone) {
+//            System.out.println("Full Swap");
+            final int s = this.alleles.size();
+            for (int i = 0; i < s; i++) {
+                final City temp = this.alleles.get(i);
+                this.alleles.set(i, this.alleles.get(s - i - 1));
+                this.alleles.set(s - i - 1, temp);
+            }
+        } else {
+            final int i1 = new Random().nextInt(alleles.size());
+            final int i2 = new Random().nextInt(alleles.size());
 
-        final City temp = new City(alleles.get(i1));
-        alleles.set(i1, new City(alleles.get(i2)));
-        alleles.set(i2, temp);
+            final City temp = new City(alleles.get(i1));
+            alleles.set(i1, new City(alleles.get(i2)));
+            alleles.set(i2, temp);
+        }
+
     }
 }
