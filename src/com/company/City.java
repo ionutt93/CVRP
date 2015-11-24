@@ -36,6 +36,7 @@ public class City {
         this.index = other.index;
         this.x = other.x;
         this.y = other.y;
+        this.demand = other.demand;
     }
 
     public double distanceTo(City c) {

@@ -19,6 +19,11 @@ public class Main {
         return lines;
     }
 
+    public static void writeOutput(final String output, final String filename) throws IOException {
+        File file = new File(filename);
+        Files.write(output, file, Charsets.UTF_8);
+    }
+
     public static ArrayList<City> getCityData(final String fileName) throws Exception {
         int currentLine = 0;
         final int dimension;
@@ -77,7 +82,16 @@ public class Main {
         Consts.depot  = new City(Consts.cities.get(0));
         Consts.cities.remove(0);
 
+//        Consts.cities.forEach(city -> System.out.println(city.getDemand()));
+
         GeneticAlgorithm algorithm = new GeneticAlgorithm();
-        algorithm.run(500);
+        algorithm.run(2000);
+        Chromosone bestSolution = algorithm.getBestSolution();
+
+        String output = "login it12754 1381\nname Ioan Troana\n";
+        output += "algorithm Genetic Algorithm with specialised crossover and mutation\n";
+        output += "cost " + bestSolution.getFitness() + "\n";
+        output += bestSolution.getPath();
+        Main.writeOutput(output, "best-solution.txt");
     }
 }

@@ -39,22 +39,43 @@ public class Chromosone {
     }
 
     public String getPath() {
-        String path = "";
-        String connector = "->";
-        double remainingCapacity = Consts.capacity;
+        String allPaths = "";
+        int i = 0;
 
-        path += "1" + connector;
-        for (City value : this.alleles) {
-            if (remainingCapacity >= value.getDemand()) {
-                remainingCapacity -= value.getDemand();
-                path += value.getIndex() + connector;
-            } else {
-                remainingCapacity = Consts.capacity;
-                path += "1\n1" + connector;
+        while (i < this.alleles.size()) {
+            String path = "1->";
+            int remaining = Consts.capacity;
+
+            while (remaining > 0 && i < this.alleles.size()) {
+                if (remaining - this.alleles.get(i).getDemand() >= 0) {
+                    remaining -= this.alleles.get(i).getDemand();
+                    path += this.alleles.get(i).getIndex() + "->";
+                    i++;
+                } else break;
             }
+
+            path += "1\n";
+            allPaths += path;
         }
-        path += "1";
-        return path;
+
+        return allPaths;
+
+//        String path = "";
+//        String connector = "->";
+//        double remainingCapacity = Consts.capacity;
+//
+//        path += "1" + connector;
+//        for (City value : this.getAlleles()) {
+//            if (remainingCapacity >= value.getDemand()) {
+//                remainingCapacity -= value.getDemand();
+//                path += value.getIndex() + connector;
+//            } else {
+//                remainingCapacity = Consts.capacity;
+//                path += "1\n1" + connector;
+//            }
+//        }
+//        path += "1";
+//        return path;
     }
 
     // TODO: 09/11/2015 Test if the compute fitness method works correctly 
@@ -62,6 +83,8 @@ public class Chromosone {
         double            distanceSum       = 0;
         int               remainingCapacity = Consts.capacity;
         int               i                 = 0;
+
+//        this.alleles.forEach(a -> { if (a.getDemand() == 0) System.out.println("DEMAND IS 0");});
 
         while (i < alleles.size() - 1) {
             distanceSum += Consts.depot.distanceTo(alleles.get(i));
@@ -129,13 +152,24 @@ public class Chromosone {
     private Chromosone getEChild(ArrayList<City> oChild, ArrayList<City> others) {
         ArrayList<City> copy = new ArrayList<City>(oChild);
         for (int i = 0; i < copy.size(); i++) {
-            if (copy.get(i).getIndex() == this.getAlleles().get(i).getIndex()) {
-                copy.set(i, others.get(i));
-            }
-            else if (copy.get(i).getIndex() == others.get(i).getIndex()) {
-                copy.set(i, others.get(i));
+            SwapValues(this.alleles.get(i), others.get(i), copy);
+//            if (copy.get(i).getIndex() == this.getAlleles().get(i).getIndex()) {
+//                copy.set(i, others.get(i));
+//            }
+//            else if (copy.get(i).getIndex() == others.get(i).getIndex()) {
+//                copy.set(i, this.alleles.get(i));
+//            }
+        }
+
+        for (int i = 0; i < copy.size() - 1; i++) {
+            for (int j = i + 1; j < copy.size(); j++) {
+                if (copy.get(i).getIndex() == copy.get(j).getIndex()) {
+                    System.out.println("Duplicate");
+                    System.out.println(copy.get(i).getIndex() + " " + copy.get(j).getIndex());
+                }
             }
         }
+
         return new Chromosone(copy);
     }
 
@@ -204,23 +238,23 @@ public class Chromosone {
     }
 
     public void mutation() {
-        final boolean swapChromosone = new Random().nextInt(1000)==0;
-        if (swapChromosone) {
-//            System.out.println("Full Swap");
-            final int s = this.alleles.size();
-            for (int i = 0; i < s; i++) {
-                final City temp = this.alleles.get(i);
-                this.alleles.set(i, this.alleles.get(s - i - 1));
-                this.alleles.set(s - i - 1, temp);
-            }
-        } else {
+//        final boolean swapChromosone = new Random().nextInt(1000)==0;
+//        if (swapChromosone) {
+////            System.out.println("Full Swap");
+//            final int s = this.alleles.size();
+//            for (int i = 0; i < s; i++) {
+//                final City temp = this.alleles.get(i);
+//                this.alleles.set(i, this.alleles.get(s - i - 1));
+//                this.alleles.set(s - i - 1, temp);
+//            }
+//        } else {
             final int i1 = new Random().nextInt(alleles.size());
             final int i2 = new Random().nextInt(alleles.size());
 
             final City temp = new City(alleles.get(i1));
             alleles.set(i1, new City(alleles.get(i2)));
             alleles.set(i2, temp);
-        }
+//        }
 
     }
 }
