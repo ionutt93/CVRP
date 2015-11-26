@@ -16,6 +16,7 @@ public class Population {
     private double mutationRate;
 
     private int noImprovement;
+    private final int crossoverType;
 
     public ArrayList<Chromosone> getPopulation() {
         return population;
@@ -23,6 +24,18 @@ public class Population {
 
     public void mergePopulation(Population other) {
         population.addAll(new ArrayList<Chromosone>(other.getPopulation()));
+//        resetNoImprov();
+//        mutationRate = Consts.mutationRate;
+
+//        population.addAll(new ArrayList<Chromosone>(other.getPopulation().subList(0, 5)));
+//        population.addAll(new ArrayList<Chromosone>(other.getPopulation().subList(other.getPopulation().size() - 10, other.getPopulation().size())));
+//        for (int i = 11; i < other.getPopulation().size() - 10; i++) {
+//            if (new Random().nextInt(100) < 25) {
+//                Chromosone mutated = new Chromosone(other.getPopulation().get(i));
+//                mutated.mutation();
+//                population.add(mutated);
+//            }
+//        }
     }
 
     public void resetNoImprov() {
@@ -38,13 +51,15 @@ public class Population {
         parentIDs = new ArrayList<Integer>(population.size());
         mutationRate = Consts.mutationRate;
         noImprovement = 1;
+        crossoverType = other.crossoverType;
     }
 
-    public Population(int populationSize) throws Exception {
+    public Population(int populationSize, int crossoverType) throws Exception {
         mutationRate = Consts.mutationRate;
         noImprovement = 1;
         population = new ArrayList<Chromosone>(populationSize);
         parentIDs = new ArrayList<Integer>(populationSize);
+        this.crossoverType = crossoverType;
 
         for (int i = 0; i < populationSize; i++) {
             population.add(new Chromosone());
@@ -59,13 +74,13 @@ public class Population {
     // removes the duplicates from the list with probability of 1/50 (1 in 50 rounds) and sorts the chromosones
     // in descending order based on their fitness values
     public void evaluatePopulation() {
-        Comparator<Chromosone> byFitness = (Chromosone c1, Chromosone c2) -> {
-            if (c1.getFitness().doubleValue() < c2.getFitness().doubleValue())
-                return -1;
-            if (c1.getFitness().doubleValue() > c2.getFitness().doubleValue())
-                return 1;
-            return 0;
-        };
+//        Comparator<Chromosone> byFitness = (Chromosone c1, Chromosone c2) -> {
+//            if (c1.getFitness().doubleValue() < c2.getFitness().doubleValue())
+//                return -1;
+//            if (c1.getFitness().doubleValue() > c2.getFitness().doubleValue())
+//                return 1;
+//            return 0;
+//        };
 
         boolean checkForDuplicates = new Random().nextInt(50)==0;
 
@@ -97,7 +112,7 @@ public class Population {
 //            }
         }
 
-        Collections.sort(population, byFitness);
+        Collections.sort(population);
         if (population.size() != Consts.populationSize)
             population.subList(Consts.populationSize, population.size() - 25).clear();
 
@@ -138,7 +153,7 @@ public class Population {
         for (int i = 0; i+1 < parentIDs.size(); i+=2) {
             final Chromosone firstParent = population.get(parentIDs.get(i));
             final Chromosone secondParent = population.get(parentIDs.get(i + 1));
-            final ArrayList<Chromosone> result = firstParent.crossover(secondParent);
+            final ArrayList<Chromosone> result = firstParent.crossover(secondParent, crossoverType);
 
             population.addAll(result);
         }

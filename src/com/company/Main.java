@@ -88,47 +88,90 @@ public class Main {
 
 //        Consts.cities.forEach(city -> System.out.println(city.getDemand()));
 
-        GeneticAlgorithm a1 = new GeneticAlgorithm();
-        GeneticAlgorithm a2 = new GeneticAlgorithm();
+        GeneticAlgorithm a1 = new GeneticAlgorithm(0);
+        GeneticAlgorithm a2 = new GeneticAlgorithm(0);
+        GeneticAlgorithm a3 = new GeneticAlgorithm(1);
+        GeneticAlgorithm a4 = new GeneticAlgorithm(1);
 
+        final int iters = 400;
         Callable<Population> task1 = () -> {
-            a1.run(100);
+            a1.run(iters);
             return a1.getPopulation();
         };
 
         Callable<Population> task2 = () -> {
-            a2.run(100);
+            a2.run(iters);
             return a2.getPopulation();
         };
 
         Callable<Population> task3 = () -> {
-            a1.run(100);
-            return a1.getPopulation();
+            a3.run(iters);
+            return a3.getPopulation();
         };
 
         Callable<Population> task4 = () -> {
-            a2.run(100);
-            return a2.getPopulation();
+            a4.run(iters);
+            return a4.getPopulation();
         };
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
-        Chromosone best = null;
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+        Chromosone best = new Chromosone();
 
-        for (int i = 0; i < 20; i++) {
+        long startTime = System.currentTimeMillis();
+        long duration = Consts.runningTime * 60 * 1000;
+
+        while(System.currentTimeMillis() < startTime + duration) {
             Future<Population> f1 = executor.submit(task1);
             Future<Population> f2 = executor.submit(task2);
+            Future<Population> f3 = executor.submit(task3);
+            Future<Population> f4 = executor.submit(task4);
 
-            Population p1 = f1.get();
-            Population p2 = f2.get();
+            try {
+                Population p1 = f1.get();
+                Population p2 = f2.get();
+                Population p3 = f3.get();
+                Population p4 = f4.get();
 
-            if (p1.getPopulation().get(0).getFitness() < p2.getPopulation().get(0).getFitness())
-                best = new Chromosone(p1.getPopulation().get(0));
-            else
-                best = new Chromosone(p2.getPopulation().get(0));
+//            if (p1.getPopulation().get(0).getFitness() < p2.getPopulation().get(0).getFitness())
+//                best = new Chromosone(p1.getPopulation().get(0));
+//            else
+//                best = new Chromosone(p2.getPopulation().get(0));
 
-            Population temp = new Population(p1);
-            p1.mergePopulation(p2);
-            p2.mergePopulation(temp);
+                if (p1.getPopulation().get(0).getFitness() < best.getFitness())
+                    best = new Chromosone(p1.getPopulation().get(0));
+                if (p2.getPopulation().get(0).getFitness() < best.getFitness())
+                    best = new Chromosone(p2.getPopulation().get(0));
+                if (p3.getPopulation().get(0).getFitness() < best.getFitness())
+                    best = new Chromosone(p3.getPopulation().get(0));
+                if (p4.getPopulation().get(0).getFitness() < best.getFitness())
+                    best = new Chromosone(p4.getPopulation().get(0));
+
+
+                Population t1 = new Population(p1);
+                Population t2 = new Population(p2);
+                Population t3 = new Population(p3);
+                Population t4 = new Population(p4);
+
+                p1.mergePopulation(t2);
+                p1.mergePopulation(t3);
+                p1.mergePopulation(t4);
+
+                p2.mergePopulation(t1);
+                p2.mergePopulation(t3);
+                p2.mergePopulation(t4);
+
+                p3.mergePopulation(t1);
+                p3.mergePopulation(t2);
+                p3.mergePopulation(t4);
+
+                p4.mergePopulation(t1);
+                p4.mergePopulation(t2);
+                p4.mergePopulation(t3);
+                System.out.println("-----------------------------");
+            }
+            catch (Exception e) {
+
+            }
         }
         executor.shutdown();
 

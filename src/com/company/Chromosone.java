@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Chromosone {
+public class Chromosone implements Comparable<Chromosone> {
     private Double          fitness;
     private int weakestLocation;
     private ArrayList<City> alleles;
@@ -82,6 +82,78 @@ public class Chromosone {
 //        }
 //        path += "1";
 //        return path;
+    }
+
+    private City next(City current, ArrayList<City> parent, ArrayList<Boolean> available) {
+        int i = 0;
+
+        for (int j = 0; j < parent.size(); j++) {
+            if (parent.get(j).getIndex() == current.getIndex()) {
+                i = j;
+                break;
+            }
+        }
+
+        if (i + 1 == parent.size() || !available.get(parent.get(i + 1).getIndex())) {
+            double minDistance = 99999;
+            int position = 0;
+            for (int j = 0; j < available.size(); j++) {
+                if (available.get(j) == true) {
+//                    double d = current.distanceTo(Consts.cities.get(j - 2));
+//                    if (d < minDistance) {
+//                        minDistance = d;
+//                        position = j;
+//                    }
+                    return Consts.cities.get(j - 2);
+                }
+            }
+        } else return parent.get(i + 1);
+
+        return null;
+    }
+
+    public Chromosone SCX(Chromosone other) {
+        ArrayList<City> p1 = new ArrayList<>(alleles);
+        ArrayList<City> p2 = new ArrayList<>(other.getAlleles());
+        ArrayList<City> c  = new ArrayList<>(p1.size());
+        ArrayList<Boolean> available = new ArrayList<>(p1.size());
+
+        for (int i = 0; i < 251; i++) {
+            available.add(true);
+        }
+        available.set(0, false);
+        available.set(1, false);
+
+        City p = null;
+        int i = 0;
+        if (new Random().nextBoolean())
+            p = p1.get(i);
+        else p = p2.get(i);
+
+        c.add(p);
+        available.set(p.getIndex(), false);
+
+        while (c.size() < p1.size()) {
+            final City n1 = next(p, p1, available);
+            final City n2 = next(p, p2, available);
+
+            if (n1 == null || n2 == null) {
+                System.err.println("next function not working");
+                System.exit(1);
+            }
+
+            if (p.distanceTo(n1) < p.distanceTo(n2)) {
+                c.add(n1);
+                available.set(n1.getIndex(), false);
+                p = n1;
+            } else {
+                c.add(n2);
+                available.set(n2.getIndex(), false);
+                p = n2;
+            }
+        }
+
+        return new Chromosone(c);
     }
 
     // TODO: 09/11/2015 Test if the compute fitness method works correctly 
@@ -181,25 +253,28 @@ public class Chromosone {
         return new Chromosone(copy);
     }
 
-    public ArrayList<Chromosone> crossover(Chromosone other) {
+    public ArrayList<Chromosone> crossover(Chromosone other, int type) {
         ArrayList<Chromosone> result = new ArrayList<Chromosone>(2);
-        Chromosone best = null;
-        int i = 5;
 
-        while(i != 0) {
-            Chromosone child = getOChild(other.getAlleles());
-            if (best != null && child.getFitness() < best.getFitness())
-                best = child;
-            else if (best == null)
-                best = child;
-            i--;
+        if (type == 0) {
+            Chromosone best = null;
+            int i = 5;
+
+            while(i != 0) {
+                Chromosone child = getOChild(other.getAlleles());
+                if (best != null && child.getFitness() < best.getFitness())
+                    best = child;
+                else if (best == null)
+                    best = child;
+                i--;
+            }
+
+            Chromosone eChild = getEChild(best.getAlleles(), other.getAlleles());
+            result.add(best);
+            result.add(eChild);
+        } else {
+            result.add(SCX(other));
         }
-
-
-        Chromosone eChild = getEChild(best.getAlleles(), other.getAlleles());
-        result.add(best);
-//        result.add(best.improveOneLocation());
-        result.add(eChild);
 
         return result;
     }
@@ -301,5 +376,19 @@ public class Chromosone {
             this.alleles = mutated;
         }
         computeFitness();
+    }
+
+    @Override
+    public int compareTo(Chromosone other) {
+        try {
+            if (this.getFitness().doubleValue() < other.getFitness().doubleValue())
+                return -1;
+            if (this.getFitness().doubleValue() > other.getFitness().doubleValue())
+                return 1;
+            return 0;
+        } catch (IllegalArgumentException e) {
+            System.out.println("bug");
+            return 0;
+        }
     }
 }

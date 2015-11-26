@@ -9,8 +9,8 @@ public class GeneticAlgorithm {
         return bestSolution;
     }
 
-    public GeneticAlgorithm() throws Exception {
-        p = new Population(Consts.populationSize);
+    public GeneticAlgorithm(int crossoverType) throws Exception {
+        p = new Population(Consts.populationSize, crossoverType);
         bestSolution = new Chromosone();
     }
 
@@ -21,6 +21,7 @@ public class GeneticAlgorithm {
     public void run(int iterations) {
         for (int i = 0; i < iterations; i++) {
 
+            p.selectParents();
             p.crossover();
             p.mutation();
             p.evaluatePopulation();
@@ -31,7 +32,6 @@ public class GeneticAlgorithm {
                 p.resetNoImprov();
             } else p.incNoImprov();
 
-            p.selectParents();
 //            p.crossover();
 //            p.mutation();
 

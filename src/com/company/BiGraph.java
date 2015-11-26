@@ -74,9 +74,9 @@ class Touple {
 }
 
 public class BiGraph {
-    final private int                length;
-    private       HashMap<Integer, Touple>    nodes;
-    private       HashMap<Integer, Touple>  customers;
+    final private int                      length;
+    private       HashMap<Integer, Touple> nodes;
+    private       HashMap<Integer, Touple> customers;
 
     public BiGraph(Integer[] a, Integer[] b) {
         length = a.length;
@@ -97,7 +97,7 @@ public class BiGraph {
     }
 
     public ArrayList<Integer> getPerfectMatching() {
-        ArrayList<Integer> matching = new ArrayList<Integer>(length);
+        ArrayList<Integer> matching  = new ArrayList<Integer>(length);
         ArrayList<Boolean> remaining = new ArrayList<Boolean>();
 
         for (int i = 0; i < 251; i++) {
@@ -129,8 +129,8 @@ public class BiGraph {
 
         for (int i = 2; i < remaining.size(); i++) {
             if (remaining.get(i) == true) {
-                int minCostPosition = 0;
-                double minCost = 9999999;
+                int    minCostPosition = 0;
+                double minCost         = 9999999;
                 for (int j = 1; j < matching.size(); j++) {
                     final int i1 = matching.get(j - 1) - 2;
                     final int i2 = matching.get(j) - 2;
@@ -153,7 +153,7 @@ public class BiGraph {
         return matching;
     }
 
-//    public ArrayList<Integer> getPerfectMatching() {
+    //    public ArrayList<Integer> getPerfectMatching() {
 //        ArrayList<Integer> matching = new ArrayList<Integer>(length);
 //        final int p = new Random().nextInt(length - 30);
 //
