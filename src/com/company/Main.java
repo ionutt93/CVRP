@@ -92,19 +92,29 @@ public class Main {
         GeneticAlgorithm a2 = new GeneticAlgorithm();
 
         Callable<Population> task1 = () -> {
-            a1.run(200);
+            a1.run(100);
             return a1.getPopulation();
         };
 
         Callable<Population> task2 = () -> {
-            a2.run(200);
+            a2.run(100);
+            return a2.getPopulation();
+        };
+
+        Callable<Population> task3 = () -> {
+            a1.run(100);
+            return a1.getPopulation();
+        };
+
+        Callable<Population> task4 = () -> {
+            a2.run(100);
             return a2.getPopulation();
         };
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Chromosone best = null;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             Future<Population> f1 = executor.submit(task1);
             Future<Population> f2 = executor.submit(task2);
 

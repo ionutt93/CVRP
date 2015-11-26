@@ -59,10 +59,10 @@ public class Population {
     // removes the duplicates from the list with probability of 1/50 (1 in 50 rounds) and sorts the chromosones
     // in descending order based on their fitness values
     public void evaluatePopulation() {
-        Comparator<Chromosone> byFitness = (c1, c2) -> {
-            if (c1.getFitness() < c2.getFitness())
+        Comparator<Chromosone> byFitness = (Chromosone c1, Chromosone c2) -> {
+            if (c1.getFitness().doubleValue() < c2.getFitness().doubleValue())
                 return -1;
-            if (c1.getFitness() > c2.getFitness())
+            if (c1.getFitness().doubleValue() > c2.getFitness().doubleValue())
                 return 1;
             return 0;
         };
@@ -98,11 +98,14 @@ public class Population {
         }
 
         Collections.sort(population, byFitness);
+        if (population.size() != Consts.populationSize)
+            population.subList(Consts.populationSize, population.size() - 25).clear();
 
-        final int difference = population.size() - Consts.populationSize;
-        for (int i = 0; i < difference; i++) {
-            population.remove(Consts.populationSize);
-        }
+//        final int difference = population.size() - Consts.populationSize;
+//        for (int i = 0; i < (difference % 2 == 0 ? difference / 2 : difference / 2 - 1); i++) {
+//            population.remove((int) (Consts.populationSize * 3 / (double) 4));
+//            population.remove(population.size() - 1);
+//        }
 
 //        population.forEach(chromosone -> System.out.println(chromosone.getFitness()));
     }
