@@ -8,7 +8,12 @@ import java.util.stream.Stream;
 
 public class Chromosone {
     private Double          fitness;
+    private int weakestLocation;
     private ArrayList<City> alleles;
+
+    public int getWeakestLocation() {
+        return weakestLocation;
+    }
 
     public Double getFitness() {
         return fitness;
@@ -36,6 +41,7 @@ public class Chromosone {
     public Chromosone(Chromosone other) {
         this.fitness = other.getFitness();
         this.alleles = new ArrayList<City>(other.alleles);
+        computeFitness();
     }
 
     public String getPath() {
@@ -83,16 +89,24 @@ public class Chromosone {
         double            distanceSum       = 0;
         int               remainingCapacity = Consts.capacity;
         int               i                 = 0;
+        double maxDistance = 0;
 
 //        this.alleles.forEach(a -> { if (a.getDemand() == 0) System.out.println("DEMAND IS 0");});
 
         while (i < alleles.size() - 1) {
             distanceSum += Consts.depot.distanceTo(alleles.get(i));
             remainingCapacity -= alleles.get(i).getDemand();
-
+//            if (Consts.depot.distanceTo(alleles.get(i)) > maxDistance) {
+//                maxDistance = Consts.depot.distanceTo(alleles.get(i));
+//                weakestLocation = i;
+//            }
             while (remainingCapacity > 0 && i < alleles.size() - 1) {
                 if (remainingCapacity >= alleles.get(i + 1).getDemand()) {
                     distanceSum += alleles.get(i).distanceTo(alleles.get(i + 1));
+//                    if (alleles.get(i).distanceTo(alleles.get(i + 1)) > maxDistance) {
+//                        maxDistance = alleles.get(i).distanceTo(alleles.get(i + 1));
+//                        weakestLocation = i;
+//                    }
                     remainingCapacity -= alleles.get(i + 1).getDemand();
                     i++;
                 } else {
@@ -153,22 +167,16 @@ public class Chromosone {
         ArrayList<City> copy = new ArrayList<City>(oChild);
         for (int i = 0; i < copy.size(); i++) {
             SwapValues(this.alleles.get(i), others.get(i), copy);
-//            if (copy.get(i).getIndex() == this.getAlleles().get(i).getIndex()) {
-//                copy.set(i, others.get(i));
-//            }
-//            else if (copy.get(i).getIndex() == others.get(i).getIndex()) {
-//                copy.set(i, this.alleles.get(i));
-//            }
         }
 
-        for (int i = 0; i < copy.size() - 1; i++) {
-            for (int j = i + 1; j < copy.size(); j++) {
-                if (copy.get(i).getIndex() == copy.get(j).getIndex()) {
-                    System.out.println("Duplicate");
-                    System.out.println(copy.get(i).getIndex() + " " + copy.get(j).getIndex());
-                }
-            }
-        }
+//        for (int i = 0; i < copy.size() - 1; i++) {
+//            for (int j = i + 1; j < copy.size(); j++) {
+//                if (copy.get(i).getIndex() == copy.get(j).getIndex()) {
+//                    System.out.println("Duplicate");
+//                    System.out.println(copy.get(i).getIndex() + " " + copy.get(j).getIndex());
+//                }
+//            }
+//        }
 
         return new Chromosone(copy);
     }
@@ -187,8 +195,10 @@ public class Chromosone {
             i--;
         }
 
+
         Chromosone eChild = getEChild(best.getAlleles(), other.getAlleles());
         result.add(best);
+//        result.add(best.improveOneLocation());
         result.add(eChild);
 
         return result;
@@ -237,24 +247,59 @@ public class Chromosone {
         }
     }
 
+    private ArrayList<City> improveOneLocation() {
+        ArrayList<City> mutated = new ArrayList<City>(alleles);
+        int randPosition = new Random().nextInt(mutated.size() - 2);
+        boolean swapped = false;
+        int tries = 25;
+        double d1 = 0;
+        double d2 = 0;
+
+        while (swapped == false && tries != 0) {
+            d1 = mutated.get(randPosition).distanceTo(mutated.get(randPosition + 1));
+            d2 = mutated.get(randPosition).distanceTo(mutated.get(randPosition + 2));
+            if (d1 > d2) {
+                final City t = new City(mutated.get(randPosition + 1));
+                mutated.set(randPosition + 1, mutated.get(randPosition + 2));
+                mutated.set(randPosition + 2, t);
+
+                swapped = true;
+            } else {
+                randPosition = new Random().nextInt(mutated.size() - 2);
+                tries--;
+            }
+        }
+
+        return mutated;
+    }
+
     public void mutation() {
-//        final boolean swapChromosone = new Random().nextInt(1000)==0;
-//        if (swapChromosone) {
-////            System.out.println("Full Swap");
-//            final int s = this.alleles.size();
-//            for (int i = 0; i < s; i++) {
-//                final City temp = this.alleles.get(i);
-//                this.alleles.set(i, this.alleles.get(s - i - 1));
-//                this.alleles.set(s - i - 1, temp);
-//            }
-//        } else {
-            final int i1 = new Random().nextInt(alleles.size());
-            final int i2 = new Random().nextInt(alleles.size());
+        final boolean doMutation1 = new Random().nextInt(100) <= 40;
+        final boolean doMutation2 = new Random().nextInt(100) <= 60;
+        final boolean doMutation3 = new Random().nextInt(100) <= 70;
 
-            final City temp = new City(alleles.get(i1));
-            alleles.set(i1, new City(alleles.get(i2)));
-            alleles.set(i2, temp);
-//        }
+        if (doMutation3) {
+            this.alleles = improveOneLocation();
+        } else {
+            ArrayList<City> mutated = new ArrayList<City>(alleles);
+            if (doMutation1) {
+                final int s = mutated.size();
+                for (int i = 0; i < s; i++) {
+                    final City temp = mutated.get(i);
+                    mutated.set(i, mutated.get(s - i - 1));
+                    mutated.set(s - i - 1, temp);
+                }
+            }
+            if (doMutation2) {
+                final int i1 = new Random().nextInt(mutated.size());
+                final int i2 = new Random().nextInt(mutated.size());
 
+                final City temp = new City(mutated.get(i1));
+                mutated.set(i1, new City(mutated.get(i2)));
+                mutated.set(i2, temp);
+            }
+            this.alleles = mutated;
+        }
+        computeFitness();
     }
 }

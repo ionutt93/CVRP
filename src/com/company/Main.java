@@ -9,6 +9,10 @@ import com.sun.tools.internal.jxc.ap.Const;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Main {
     public static String[] readInputFile(final String fileName) throws IOException{
@@ -84,14 +88,46 @@ public class Main {
 
 //        Consts.cities.forEach(city -> System.out.println(city.getDemand()));
 
-        GeneticAlgorithm algorithm = new GeneticAlgorithm();
-        algorithm.run(2000);
-        Chromosone bestSolution = algorithm.getBestSolution();
+        GeneticAlgorithm a1 = new GeneticAlgorithm();
+        GeneticAlgorithm a2 = new GeneticAlgorithm();
+
+        Callable<Population> task1 = () -> {
+            a1.run(200);
+            return a1.getPopulation();
+        };
+
+        Callable<Population> task2 = () -> {
+            a2.run(200);
+            return a2.getPopulation();
+        };
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        Chromosone best = null;
+
+        for (int i = 0; i < 5; i++) {
+            Future<Population> f1 = executor.submit(task1);
+            Future<Population> f2 = executor.submit(task2);
+
+            Population p1 = f1.get();
+            Population p2 = f2.get();
+
+            if (p1.getPopulation().get(0).getFitness() < p2.getPopulation().get(0).getFitness())
+                best = new Chromosone(p1.getPopulation().get(0));
+            else
+                best = new Chromosone(p2.getPopulation().get(0));
+
+            Population temp = new Population(p1);
+            p1.mergePopulation(p2);
+            p2.mergePopulation(temp);
+        }
+        executor.shutdown();
+
+        System.out.println("Best score: " + best.getFitness());
 
         String output = "login it12754 1381\nname Ioan Troana\n";
         output += "algorithm Genetic Algorithm with specialised crossover and mutation\n";
-        output += "cost " + bestSolution.getFitness() + "\n";
-        output += bestSolution.getPath();
+        output += "cost " + best.getFitness() + "\n";
+        output += best.getPath();
         Main.writeOutput(output, "best-solution.txt");
     }
 }

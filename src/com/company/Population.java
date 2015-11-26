@@ -33,6 +33,13 @@ public class Population {
         noImprovement++;
     }
 
+    public Population(Population other) {
+        population = new ArrayList<Chromosone>(other.getPopulation());
+        parentIDs = new ArrayList<Integer>(population.size());
+        mutationRate = Consts.mutationRate;
+        noImprovement = 1;
+    }
+
     public Population(int populationSize) throws Exception {
         mutationRate = Consts.mutationRate;
         noImprovement = 1;
@@ -64,7 +71,8 @@ public class Population {
 
         if (checkForDuplicates) {
             final double avg_sim = ((double) population.get(0).getAlleles().size()) - getDirversity();
-            mutationRate = avg_sim / ((double) population.get(0).getAlleles().size() * 100);
+            mutationRate = noImprovement * avg_sim / ((double) population.get(0).getAlleles().size() * 100);
+            if (mutationRate > 0.8) mutationRate = 0.8;
 //            System.out.println(Consts.mutationRate);
 
 
@@ -136,9 +144,13 @@ public class Population {
 
     public void mutation() {
         final int upperLimit = (int) (1 / mutationRate);
-        population.forEach(chromosone -> {
-            if(new Random().nextInt(upperLimit) == 0) { chromosone.mutation(); }
-        });
+        final int size = population.size();
+
+        for (int i = 0; i < size; i++) {
+            if(new Random().nextInt(upperLimit) == 0) {
+                population.get(i).mutation();
+            }
+        }
     }
 
     public void trimPopulation() {

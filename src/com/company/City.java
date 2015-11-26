@@ -4,7 +4,7 @@ public class City {
     private final int x;
     private final int y;
     private final int index;
-    private       int demand;
+    private int demand;
 
     public int getX() {
         return x;

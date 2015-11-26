@@ -14,36 +14,32 @@ public class GeneticAlgorithm {
         bestSolution = new Chromosone();
     }
 
+    public Population getPopulation() {
+        return p;
+    }
 
     public void run(int iterations) {
         for (int i = 0; i < iterations; i++) {
 
+            p.crossover();
+            p.mutation();
             p.evaluatePopulation();
-//            System.out.println("p.evaluatePopulation();");
-//            p.trimPopulation();
-//            System.out.println("p.trimPopulation();");
 
             final Chromosone bestSolutionInPopulation = p.getPopulation().get(0);
             if (bestSolutionInPopulation.getFitness() < bestSolution.getFitness()) {
                 bestSolution = new Chromosone(bestSolutionInPopulation);
-//                p.resetNoImprov();
-            } else {
-//                p.incNoImprov();
-            }
+                p.resetNoImprov();
+            } else p.incNoImprov();
 
             p.selectParents();
-//            System.out.println("p.selectParents();");
-            p.crossover();
-//            System.out.println("p.crossover();");
-            p.mutation();
-//            System.out.println("p.mutation();");
-//            p.checkPopulationValidity();
+//            p.crossover();
+//            p.mutation();
 
             if (i % 50 == 0)
-                System.out.println(bestSolution.getFitness());
+                System.out.println("Thread: " + Thread.currentThread().getId() + " = " + bestSolution.getFitness());
         }
 
-        System.out.println("best solution: " + bestSolution.getFitness());
+//        System.out.println("best solution: " + bestSolution.getFitness());
 //        System.out.println();
 //        bestSolution.getAlleles().forEach(city -> System.out.print(city.getIndex() + "|"));
 //        System.out.println(bestSolution.getPath());
