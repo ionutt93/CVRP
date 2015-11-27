@@ -32,16 +32,7 @@ public class GeneticAlgorithm {
                 p.resetNoImprov();
             } else p.incNoImprov();
 
-//            p.crossover();
-//            p.mutation();
-
-            if (i % 50 == 0)
-                System.out.println("Thread: " + Thread.currentThread().getId() + " = " + bestSolution.getFitness());
         }
 
-//        System.out.println("best solution: " + bestSolution.getFitness());
-//        System.out.println();
-//        bestSolution.getAlleles().forEach(city -> System.out.print(city.getIndex() + "|"));
-//        System.out.println(bestSolution.getPath());
     }
 }

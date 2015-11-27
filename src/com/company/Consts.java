@@ -12,5 +12,5 @@ public class Consts {
     public final static double crossoverRate = 0.75;
     public static City depot;
     public static ArrayList<City> cities;
-    public final static int runningTime = 10;
+    public static int runningTime = 10;
 }

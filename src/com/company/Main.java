@@ -72,7 +72,7 @@ public class Main {
         } else
             throw new Exception("Demand values not specified!");
 
-        System.out.println("Allocation finished");
+//        System.out.println("Allocation finished");
 
         ArrayList<City> result = new ArrayList<City>(cities.length);
         result.addAll(Arrays.asList(cities));
@@ -81,8 +81,15 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
+        if (args.length > 0) {
+            if (Integer.parseInt(args[0]) > 0 && Integer.parseInt(args[0]) < 55)
+                Consts.runningTime = Integer.parseInt(args[0]);
+            else
+                Consts.runningTime = 10;
+        }
+
         // reading in the data
-        Consts.cities = Main.getCityData("fruitybun250.vrp.txt");
+        Consts.cities = Main.getCityData("fruitybun250.vrp");
         Consts.depot  = new City(Consts.cities.get(0));
         Consts.cities.remove(0);
 
@@ -167,7 +174,7 @@ public class Main {
                 p4.mergePopulation(t1);
                 p4.mergePopulation(t2);
                 p4.mergePopulation(t3);
-                System.out.println("-----------------------------");
+//                System.out.println("-----------------------------");
             }
             catch (Exception e) {
 
@@ -175,9 +182,9 @@ public class Main {
         }
         executor.shutdown();
 
-        System.out.println("Best score: " + best.getFitness());
+//        System.out.println("Best score: " + best.getFitness());
 
-        String output = "login it12754 1381\nname Ioan Troana\n";
+        String output = "login it12754 52247\nname Ioan Troana\n";
         output += "algorithm Genetic Algorithm with specialised crossover and mutation\n";
         output += "cost " + best.getFitness() + "\n";
         output += best.getPath();
